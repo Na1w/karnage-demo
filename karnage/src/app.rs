@@ -310,6 +310,9 @@ impl ApplicationHandler for App {
                                     },
                                 ),
                             );
+                            let mut backend = backend;
+                            backend.resize(w, h);
+                            self.engine.resize(&backend.device, w, h);
                             self.backend = Some(backend);
                             if let Some(win) = &self.window {
                                 win.request_redraw();
