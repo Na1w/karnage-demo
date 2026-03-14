@@ -52,7 +52,7 @@ fn run_audio(state: Arc<MediaState>, timeline: Arc<Timeline<MediaAction>>, start
 
 #[cfg(target_arch = "wasm32")]
 fn run_audio(
-    state: Arc<DemoState>,
+    state: Arc<MediaState>,
     timeline: Arc<Timeline<MediaAction>>,
     start_offset: f32,
 ) -> cpal::Stream {
