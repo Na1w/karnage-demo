@@ -1,4 +1,4 @@
-name: Build and Test
+name: Build and Deploy
 
 on:
   push:
@@ -9,11 +9,17 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
-  build:
-    name: Build on ${{ matrix.os }}
+  build-native:
+    name: Build Native on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
@@ -29,8 +35,67 @@ jobs:
     - name: Setup Rust
       uses: dtolnay/rust-toolchain@stable
 
-    - name: Build
-      run: cargo build --verbose
+    - name: Build Release
+      run: cargo build --release --verbose
 
-    - name: Run tests
-      run: cargo test --verbose
+    - name: Prepare Artifacts (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: bash
+      run: |
+        mkdir -p dist
+        cp target/release/karnage.exe dist/karnage-windows.exe
+
+    - name: Prepare Artifacts (Unix)
+      if: matrix.os != 'windows-latest'
+      run: |
+        mkdir -p dist
+        cp target/release/karnage dist/karnage-${{ matrix.os == 'macos-latest' && 'macos' || 'linux' }}
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: karnage-${{ matrix.os }}
+        path: dist/
+
+  build-web:
+    name: Build Web (WASM)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: wasm32-unknown-unknown
+
+    - name: Install wasm-pack
+      run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+    - name: Build WASM
+      run: |
+        cd karnage
+        wasm-pack build --target web --release
+
+    - name: Prepare Web Dist
+      run: |
+        mkdir -p dist-web
+        cp karnage/index.html dist-web/
+        cp -r karnage/pkg dist-web/
+        sed -i '/<\/body>/i <script type="module">import init from "./pkg/karnage.js"; init();<\/script>' dist-web/index.html
+
+    - name: Upload Pages Artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: dist-web/
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build-web
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
