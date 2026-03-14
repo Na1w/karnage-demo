@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2024"
 authors = ["Fredrik Andersson"]
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
 bytemuck = { version = "1.25.0", features = ["derive"] }
 cpal = { version = "0.17.3", features = ["wasm-bindgen"] }
