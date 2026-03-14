@@ -182,35 +182,39 @@ fn setup_audio_stream(
                 }
 
                 let triggers = timeline.find_in_range(cur_t, next_t);
-                for trigger in triggers {
-                    match trigger.data {
-                        MediaAction::Trigger(id) => match id {
-                            0 => k_env = 1.0,
-                            1 => {
-                                b_env = 1.0;
-                                accent_active = false;
-                            }
-                            2 => {
-                                b_env = 1.0;
-                                accent_active = true;
-                            }
-                            3 => h_env = 1.0,
-                            4 => h_env = 0.4,
-                            _ => {}
-                        },
-                        MediaAction::Parameter(id, val) => {
-                            if id == 4 {
-                                current_freq = val;
-                            }
-                        }
-                        _ => {}
-                    }
-                }
 
                 for i in 0..block_size {
                     let cur_clock = clock + i as u64;
                     let t = cur_clock as f32 / sr;
                     let t_v = (t - 4.5).max(0.0);
+
+                    for trigger in &triggers {
+                        let trigger_sample_t = trigger.start;
+                        if t >= trigger_sample_t && (t - 1.0 / sr) < trigger_sample_t {
+                            match trigger.data {
+                                MediaAction::Trigger(id) => match id {
+                                    0 => k_env = 1.0,
+                                    1 => {
+                                        b_env = 1.0;
+                                        accent_active = false;
+                                    }
+                                    2 => {
+                                        b_env = 1.0;
+                                        accent_active = true;
+                                    }
+                                    3 => h_env = 1.0,
+                                    4 => h_env = 0.4,
+                                    _ => {}
+                                },
+                                MediaAction::Parameter(id, val) => {
+                                    if id == 4 {
+                                        current_freq = val;
+                                    }
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
 
                     k_env *= k_decay;
                     b_env *= b_decay;
