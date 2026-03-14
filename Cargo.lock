@@ -827,9 +827,9 @@ dependencies = [
 
 [[package]]
 name = "infinitegfx-core"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09b908ca371f7e757fa8d5a4d164357e28d7890a0ef138233853424011539101"
+checksum = "6701ddb1ce5405d7377ddacb269f3923379882a0a82995cc9a7d0b646cd1bd15"
 dependencies = [
  "bytemuck",
  "infinitedsp-core",

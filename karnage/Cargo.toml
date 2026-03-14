@@ -10,7 +10,7 @@ cpal = { version = "0.17.3", features = ["wasm-bindgen"] }
 env_logger = "0.11.9"
 infinitedsp-core = "1.1.0"
 log = "0.4.29"
-infinitegfx-core = "0.1.0"
+infinitegfx-core = "0.1.1"
 infinitemedia-core = "0.1.0"
 pollster = "0.4.0"
 wgpu = "28.0.0"

@@ -78,7 +78,8 @@ impl App {
             .audio_time
             .store(start_time_offset.to_bits(), Ordering::Relaxed);
 
-        let engine = MediaEngine::new(state.clone());
+        let mut engine = MediaEngine::new(state.clone());
+        engine = crate::karnage::populate_audio(engine);
 
         #[cfg(target_arch = "wasm32")]
         GLOBAL_STATE.with(|lock| {

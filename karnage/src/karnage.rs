@@ -102,6 +102,11 @@ pub fn karnage_music() -> AudioSequence {
         ])
 }
 
+pub fn populate_audio(engine: MediaEngine) -> MediaEngine {
+    let music = karnage_music();
+    add_audio_sequence(engine, music.start, music.end, music)
+}
+
 pub fn build_demo(
     state: Arc<MediaState>,
     timeline: Arc<Timeline<MediaAction>>,
@@ -136,9 +141,6 @@ pub fn build_demo(
 
     let scene_finale = GfxChain::new(format).and(solid_color([0.0, 0.0, 0.0, 1.0]));
     engine = engine.with_scene(205.0, 206.0, scene_finale);
-
-    let music = karnage_music();
-    engine = add_audio_sequence(engine, music.start, music.end, music);
 
     engine
 }
