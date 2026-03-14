@@ -1,0 +1,8 @@
+[target.x86_64-unknown-linux-gnu]
+pre-build = [
+    "dpkg --add-architecture $CROSS_Debian_Arch",
+    "apt-get update",
+    "apt-get install --assume-yes libasound2-dev:$CROSS_Debian_Arch libudev-dev:$CROSS_Debian_Arch libx11-dev:$CROSS_Debian_Arch libxi-dev:$CROSS_Debian_Arch libxcursor-dev:$CROSS_Debian_Arch libxinerama-dev:$CROSS_Debian_Arch libxrandr-dev:$CROSS_Debian_Arch pkg-config"
+]
+
+[target.x86_64-pc-windows-gnu]

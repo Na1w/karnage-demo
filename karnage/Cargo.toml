@@ -1,0 +1,25 @@
+[package]
+name = "karnage"
+version = "0.1.0"
+edition = "2024"
+authors = ["Fredrik Andersson"]
+
+[dependencies]
+bytemuck = { version = "1.25.0", features = ["derive"] }
+cpal = { version = "0.17.3", features = ["wasm-bindgen"] }
+env_logger = "0.11.9"
+infinitedsp-core = "1.1.0"
+log = "0.4.29"
+infinitegfx-core = "0.1.0"
+infinitemedia-core = "0.1.0"
+pollster = "0.4.0"
+wgpu = "28.0.0"
+winit = "0.30.13"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+web-sys = { version = "0.3", features = ["CanvasRenderingContext2d", "Document", "Element", "HtmlCanvasElement", "Window", "HtmlElement", "EventTarget", "MouseEvent"] }
+console_error_panic_hook = "0.1"
+console_log = "1.0"
