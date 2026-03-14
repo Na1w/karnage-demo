@@ -121,10 +121,21 @@ fn setup_audio_stream(
 
     let mut kick = Oscillator::new(AudioParam::hz(50.0), Waveform::Sine);
 
+    bass_osc.set_sample_rate(sr);
+    bass_filter.set_sample_rate(sr);
+    bass_dist.set_sample_rate(sr);
+    hat_osc.set_sample_rate(sr);
+    hat_filter.set_sample_rate(sr);
+    kick.set_sample_rate(sr);
+
     let mut glitch = GlitchProcessor {
         sr,
         state: state.clone(),
     };
+
+    let k_decay = (0.9993f32).powf(44100.0 / sr);
+    let b_decay = (0.9990f32).powf(44100.0 / sr);
+    let h_decay = (0.9985f32).powf(44100.0 / sr);
 
     let mut clock = (start_offset * sr) as u64;
     let mut k_env = 0.0f32;
@@ -201,9 +212,9 @@ fn setup_audio_stream(
                     let t = cur_clock as f32 / sr;
                     let t_v = (t - 4.5).max(0.0);
 
-                    k_env *= 0.9993;
-                    b_env *= 0.9990;
-                    h_env *= 0.9985;
+                    k_env *= k_decay;
+                    b_env *= b_decay;
+                    h_env *= h_decay;
 
                     kick.frequency = AudioParam::hz(40.0 + k_env * k_env * 180.0);
                     let mut kv = [0.0];
