@@ -58,7 +58,7 @@ jobs:
         path: dist/
 
   build-web:
-    name: Build Web (WASM)
+    name: Build Web (Trunk)
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -68,25 +68,19 @@ jobs:
       with:
         targets: wasm32-unknown-unknown
 
-    - name: Install wasm-pack
-      run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+    - name: Download Trunk
+      run: |
+        wget -qO- https://github.com/trunk-rs/trunk/releases/latest/download/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
 
-    - name: Build WASM
+    - name: Build Web
       run: |
         cd karnage
-        wasm-pack build --target web --release
-
-    - name: Prepare Web Dist
-      run: |
-        mkdir -p dist-web
-        cp karnage/index.html dist-web/
-        cp -r karnage/pkg dist-web/
-        sed -i '/<\/body>/i <script type="module">import init from "./pkg/karnage.js"; init();<\/script>' dist-web/index.html
+        ../trunk build --release --public-url /karnage-demo/
 
     - name: Upload Pages Artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: dist-web/
+        path: karnage/dist/
 
   deploy:
     if: github.ref == 'refs/heads/main'
