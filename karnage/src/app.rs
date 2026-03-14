@@ -23,7 +23,7 @@ use std::cell::RefCell;
 #[cfg(target_arch = "wasm32")]
 thread_local! {
 
-    static GLOBAL_STATE: RefCell<Option<(Arc<DemoState>, Arc<Timeline<MediaAction>>)>> = const { RefCell::new(None) };
+    static GLOBAL_STATE: RefCell<Option<(Arc<MediaState>, Arc<Timeline<MediaAction>>)>> = const { RefCell::new(None) };
 }
 
 #[cfg(target_arch = "wasm32")]
