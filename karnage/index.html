@@ -69,6 +69,28 @@
     </div>
 
     <script>
+        if (!navigator.gpu) {
+            const btn = document.getElementById('start-btn');
+            const info = document.querySelector('.info');
+            if (btn) {
+                btn.style.display = 'none';
+                const errorMsg = document.createElement('div');
+                errorMsg.style.color = '#ff4444';
+                errorMsg.style.border = '2px solid #ff4444';
+                errorMsg.style.padding = '15px 30px';
+                errorMsg.style.fontSize = '20px';
+                errorMsg.style.marginBottom = '20px';
+                errorMsg.style.textAlign = 'center';
+                errorMsg.innerText = 'ERROR: WebGPU not supported!';
+                btn.parentNode.insertBefore(errorMsg, btn);
+            }
+            if (info) {
+                info.innerHTML = 'This demo requires a modern browser with WebGPU (Chrome, Edge, or Firefox).';
+                info.style.color = '#ff4444';
+                info.style.opacity = '1';
+            }
+        }
+
         window.hideOverlay = function() {
             const overlay = document.getElementById('overlay');
             if (overlay) {

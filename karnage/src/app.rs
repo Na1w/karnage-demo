@@ -101,6 +101,11 @@ impl App {
     }
 
     fn maybe_start_audio(&mut self) {
+        #[cfg(target_arch = "wasm32")]
+        if AUDIO_STARTED.load(Ordering::Relaxed) {
+            self.audio_started = true;
+        }
+
         if !self.audio_started {
             start_audio(
                 self.state.clone(),
@@ -183,10 +188,9 @@ impl ApplicationHandler for App {
                             })
                                 as Box<dyn Fn()>);
                             use wasm_bindgen::JsCast;
-                            let _ = btn.add_event_listener_with_callback(
-                                "click",
-                                closure.as_ref().unchecked_ref(),
-                            );
+                            let callback = closure.as_ref().unchecked_ref();
+                            let _ = btn.add_event_listener_with_callback("click", callback);
+                            let _ = btn.add_event_listener_with_callback("touchend", callback);
                             closure.forget();
                         }
                     }
