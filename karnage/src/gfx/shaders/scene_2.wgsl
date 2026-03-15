@@ -86,8 +86,8 @@ fn map(p: vec3<f32>) -> f32 {
     let ripple_m = smoothstep(0.0, 25.0, dt) * (0.7 + 0.3 * sin(t * 0.2));
     let breathing = sin(p.z * 0.1 + t * 0.6) * 1.5 + cos(p.z * 0.05 - t * 0.3) * 1.0;
     
-    let ribs = sin(p.z * 2.5 + angle * 3.0) * 0.35 * ripple_m;
-    let muscle = sin(angle * 6.0 - p.z * 0.4) * 0.25 * ripple_m;
+    let ribs = sin(p.z * 2.5 + angle * 3.0) * 0.35 * ripple_m * (1.0 + globals.sweep * 0.5);
+    let muscle = sin(angle * 6.0 - p.z * 0.4) * 0.25 * ripple_m * (1.0 + globals.sweep * 0.8);
     
     let spike_pos = sin(angle * 4.0 + p.z * 0.2 + t * 0.5);
     let time_growth = smoothstep(0.0, 60.0, dt) * 1.2; 
@@ -96,11 +96,10 @@ fn map(p: vec3<f32>) -> f32 {
     let base_r = 5.5 + breathing;
     let final_r = base_r + ribs + muscle - spikes;
     
-    let morph_v = smoothstep(0.2, 0.8, globals.sweep); 
     let d_circle = length(q) - final_r;
     let d_hex = sd_hexagon(q, final_r * 0.9);
     
-    let tunnel_d = -mix(d_circle, d_hex, morph_v) * 0.4;
+    let tunnel_d = -mix(d_circle, d_hex, 0.5) * 0.4;
 
     let dt_rot = dt * 0.07;
     let speed_boost = smoothstep(37.0, 45.0, dt) * (dt - 37.0) * 28.0;
