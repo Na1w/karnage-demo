@@ -80,6 +80,9 @@ impl App {
 
         let mut engine = MediaEngine::new(state.clone());
         engine = crate::karnage::populate_audio(engine);
+        if let Some(tl) = Arc::get_mut(&mut engine.content.timeline) {
+            tl.finalize();
+        }
 
         #[cfg(target_arch = "wasm32")]
         GLOBAL_STATE.with(|lock| {
@@ -217,6 +220,9 @@ impl ApplicationHandler for App {
                 self.engine.content.timeline.clone(),
                 backend.format,
             );
+            if let Some(tl) = Arc::get_mut(&mut self.engine.content.timeline) {
+                tl.finalize();
+            }
             self.engine.init(
                 &handle,
                 &backend
@@ -305,6 +311,9 @@ impl ApplicationHandler for App {
                                 self.engine.content.timeline.clone(),
                                 backend.format,
                             );
+                            if let Some(tl) = Arc::get_mut(&mut self.engine.content.timeline) {
+                                tl.finalize();
+                            }
                             self.engine.init(
                                 &handle,
                                 &backend.device.create_bind_group_layout(

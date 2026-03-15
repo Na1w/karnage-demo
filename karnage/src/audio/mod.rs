@@ -175,17 +175,17 @@ fn setup_audio_stream(
 
                 let mut active_seq_data = None;
                 for event in timeline.active_at(cur_t) {
-                    if let MediaAction::AudioSequence(seq) = &event.data {
-                        active_seq_data = Some((event.start, event.end, seq.clone()));
+                    if let MediaAction::AudioSequence(seq) = event.data {
+                        active_seq_data = Some((event.start, event.end, seq));
                         break;
                     }
                 }
 
                 let triggers = timeline.find_in_range(cur_t - 0.5 / sr, next_t + 0.5 / sr);
 
-                let trigger_samples: Vec<(u64, &MediaAction)> = triggers
-                    .iter()
-                    .map(|t| ((t.start * sr).round() as u64, &t.data))
+                let trigger_samples: Vec<(u64, MediaAction)> = triggers
+                    .into_iter()
+                    .map(|t| ((t.start * sr).round() as u64, t.data))
                     .collect();
 
                 for i in 0..block_size {
