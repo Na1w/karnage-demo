@@ -181,17 +181,21 @@ fn setup_audio_stream(
                     }
                 }
 
-                let triggers = timeline.find_in_range(cur_t, next_t);
+                let triggers = timeline.find_in_range(cur_t - 0.5 / sr, next_t + 0.5 / sr);
+
+                let trigger_samples: Vec<(u64, &MediaAction)> = triggers
+                    .iter()
+                    .map(|t| ((t.start * sr).round() as u64, &t.data))
+                    .collect();
 
                 for i in 0..block_size {
                     let cur_clock = clock + i as u64;
                     let t = cur_clock as f32 / sr;
                     let t_v = (t - 4.5).max(0.0);
 
-                    for trigger in &triggers {
-                        let trigger_sample_t = trigger.start;
-                        if t >= trigger_sample_t && (t - 1.0 / sr) < trigger_sample_t {
-                            match trigger.data {
+                    for (trigger_sample, action) in &trigger_samples {
+                        if cur_clock == *trigger_sample {
+                            match action {
                                 MediaAction::Trigger(id) => match id {
                                     0 => k_env = 1.0,
                                     1 => {
@@ -207,8 +211,8 @@ fn setup_audio_stream(
                                     _ => {}
                                 },
                                 MediaAction::Parameter(id, val) => {
-                                    if id == 4 {
-                                        current_freq = val;
+                                    if *id == 4 {
+                                        current_freq = *val;
                                     }
                                 }
                                 _ => {}
