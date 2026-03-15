@@ -93,7 +93,7 @@ impl App {
             engine,
             audio_started: false,
             start_time_offset,
-            render_scale: 2.0,
+            render_scale: 1.0,
             allow_mode_switch,
             #[cfg(target_arch = "wasm32")]
             backend_receiver: None,
